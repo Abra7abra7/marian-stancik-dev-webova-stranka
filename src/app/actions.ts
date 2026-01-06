@@ -209,10 +209,21 @@ async function sendAuditEmail(to: string, url: string, data: AIAnalysis, psi: an
     </div>
   `;
 
-  await resend.emails.send({
-    from: "AI Agent <onboarding@resend.dev>",
-    to: to,
-    subject: `🚀 Váš AI Audit Report pre ${url}`,
-    html: htmlContent,
-  });
+  try {
+    const { data: emailData, error } = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || "AI Agent <onboarding@resend.dev>",
+      to: to,
+      subject: `🚀 Váš AI Audit Report pre ${url}`,
+      html: htmlContent,
+    });
+
+    if (error) {
+      console.error("Resend API Error:", error);
+      throw new Error(`Resend failed: ${error.message}`);
+    }
+    console.log("Email sent successfully:", emailData);
+  } catch (e) {
+    console.error("Critical: Failed to send audit email.", e);
+    // Don't crash the whole flow, just log it so we can see it in Vercel logs
+  }
 }
