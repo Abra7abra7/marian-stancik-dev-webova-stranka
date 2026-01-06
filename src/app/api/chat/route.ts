@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google';
-import { streamText, tool } from 'ai';
+import { streamText, tool, convertToModelMessages } from 'ai';
 import { z } from 'zod';
 import { Resend } from 'resend';
 
@@ -9,15 +9,10 @@ export async function POST(req: Request) {
     try {
         const { messages: rawMessages } = await req.json();
 
-        // Manual conversion to CoreMessage format compatible with AI SDK v6
-        // The client sends 'parts' but the server validator expects 'content' for assistant messages
-        const messages = rawMessages.map((m: any) => {
-            // Map 'parts' to 'content' for CoreMessage compatibility
-            if (m.parts && !m.content) {
-                return { ...m, content: m.parts };
-            }
-            return m;
-        });
+        // Use helper to convert UI messages to ModelMessages (CoreMessages in newer v6 builds)
+        const messages = await convertToModelMessages(rawMessages);
+
+        console.log("Normalized Messages:", JSON.stringify(messages, null, 2));
 
         console.log("Chat API processing messages count:", messages.length);
 
