@@ -89,7 +89,9 @@ export async function POST(req: Request) {
             },
         });
 
-        return (result as any).toDataStreamResponse();
+        console.log("StreamText Result Keys:", Object.keys(result));
+        // Fallback to toTextStreamResponse as toDataStreamResponse is missing in this env
+        return (result as any).toTextStreamResponse();
     } catch (error) {
         console.error("Chat API Error:", error);
         return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
