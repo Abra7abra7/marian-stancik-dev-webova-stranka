@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/sections/hero-section";
 import { AgenticSection } from "@/components/sections/agentic-section";
 import { VibeCodingSection } from "@/components/sections/vibe-coding-section";
 import { UseCasesSection } from "@/components/sections/use-cases-section";
+import { AuditAgentSection } from "@/components/sections/audit-agent-section";
 import { SecuritySection } from "@/components/sections/security-section";
 import { RoadmapSection } from "@/components/sections/roadmap-section";
 
@@ -14,6 +15,7 @@ export default function Home() {
       <AgenticSection />
       <VibeCodingSection />
       <UseCasesSection />
+      <AuditAgentSection />
       <SecuritySection />
       <RoadmapSection />
     </main>
