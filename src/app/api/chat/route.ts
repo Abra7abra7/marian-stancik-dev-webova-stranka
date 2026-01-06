@@ -12,7 +12,8 @@ export async function POST(req: Request) {
         // Manual conversion to CoreMessage format compatible with AI SDK v6
         // The client sends 'parts' but the server validator expects 'content' for assistant messages
         const messages = rawMessages.map((m: any) => {
-            if (m.role === 'assistant' && m.parts && !m.content) {
+            // Map 'parts' to 'content' for CoreMessage compatibility
+            if (m.parts && !m.content) {
                 return { ...m, content: m.parts };
             }
             return m;
