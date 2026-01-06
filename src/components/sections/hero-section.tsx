@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/context";
 
 function Counter({
     from,
@@ -47,6 +48,7 @@ export function HeroSection() {
     const { scrollY } = useScroll();
     const y = useTransform(scrollY, [0, 500], [0, 200]);
     const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+    const { t } = useLanguage();
 
     return (
         <section className="relative min-h-screen md:h-screen w-full flex items-center justify-center overflow-hidden bg-slate-950 pt-32 pb-12 md:py-0">
@@ -76,7 +78,7 @@ export function HeroSection() {
                     transition={{ delay: 0.5, duration: 0.8 }}
                     className="text-3xl md:text-6xl font-bold text-white mb-4 md:mb-6 font-display tracking-tight"
                 >
-                    Éra priemyselnej AI
+                    {t.hero.label}
                 </motion.h2>
 
                 <motion.p
@@ -85,7 +87,7 @@ export function HeroSection() {
                     transition={{ delay: 0.7, duration: 0.8 }}
                     className="text-lg md:text-2xl text-slate-400 max-w-2xl mx-auto mb-10 md:mb-16 font-light"
                 >
-                    Od experimentov k <span className="text-indigo-400 font-normal">autonómnemu podniku</span>
+                    {t.hero.description}
                 </motion.p>
 
                 {/* Stats Grid */}
@@ -99,7 +101,7 @@ export function HeroSection() {
                         <div className="text-4xl font-bold text-indigo-400 font-mono mb-2">
                             <Counter from={0} to={56} suffix="%" />
                         </div>
-                        <p className="text-sm text-slate-400">Lídrov chce AI, ale...</p>
+                        <p className="text-sm text-slate-400">{t.hero.stats.leaders}</p>
                     </motion.div>
 
                     <motion.div
@@ -111,7 +113,7 @@ export function HeroSection() {
                         <div className="text-4xl font-bold text-red-400 font-mono mb-2">
                             <Counter from={0} to={78} suffix="%" />
                         </div>
-                        <p className="text-sm text-red-200/70">Zlyháva pri integrácii</p>
+                        <p className="text-sm text-red-200/70">{t.hero.stats.integration}</p>
                     </motion.div>
 
                     <motion.div
@@ -125,7 +127,7 @@ export function HeroSection() {
                             <div className="text-4xl font-bold text-white font-mono mb-2">
                                 NxM
                             </div>
-                            <p className="text-sm text-slate-400">Problém API prepojení</p>
+                            <p className="text-sm text-slate-400">{t.hero.stats.api}</p>
                         </div>
                     </motion.div>
                 </div>
@@ -136,7 +138,7 @@ export function HeroSection() {
                     transition={{ delay: 2, duration: 1 }}
                     className="mt-8 md:mt-12 text-sm text-slate-500 font-mono uppercase tracking-widest"
                 >
-                    Scroll to explore
+                    {t.hero.scroll}
                 </motion.div>
             </motion.div>
         </section>

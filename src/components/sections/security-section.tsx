@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
+import { useLanguage } from '@/lib/i18n/context';
 import {
     ReactFlow,
     Controls,
@@ -96,42 +97,61 @@ type CustomNodeData = {
 
 type AppNode = Node<SecurityNodeData | CustomNodeData>;
 
-const initialNodes: AppNode[] = [
-    {
-        id: 'user',
-        type: 'custom',
-        position: { x: 250, y: 0 },
-        data: { label: 'User / Manager', desc: 'Initiates Request', icon: User, color: 'bg-blue-500' },
-    },
-    {
-        id: 'agent',
-        type: 'custom',
-        position: { x: 250, y: 200 },
-        data: { label: 'AI Agent', desc: 'Process & Fetch', icon: Bot, color: 'bg-indigo-500' },
-    },
-    {
-        id: 'security',
-        type: 'security',
-        position: { x: 230, y: 400 },
-        data: { status: 'idle' }
-    },
-    {
-        id: 'data',
-        type: 'custom',
-        position: { x: 250, y: 600 },
-        data: { label: 'Sensitive Data', desc: 'Encrypted DB', icon: Database, color: 'bg-slate-700' },
-    },
-];
-
-const initialEdges = [
-    { id: 'e1-2', source: 'user', target: 'agent', animated: true, style: { stroke: '#64748b' } },
-    { id: 'e2-3', source: 'agent', target: 'security', animated: true, style: { stroke: '#64748b' } },
-    { id: 'e3-4', source: 'security', target: 'data', animated: false, style: { stroke: '#64748b', opacity: 0.2 } },
-];
-
 export function SecuritySection() {
+    const { t } = useLanguage();
+
+    const initialNodes: AppNode[] = [
+        {
+            id: 'user',
+            type: 'custom',
+            position: { x: 250, y: 0 },
+            data: { label: t.security.nodes.user.label, desc: t.security.nodes.user.desc, icon: User, color: 'bg-blue-500' },
+        },
+        {
+            id: 'agent',
+            type: 'custom',
+            position: { x: 250, y: 200 },
+            data: { label: t.security.nodes.agent.label, desc: t.security.nodes.agent.desc, icon: Bot, color: 'bg-indigo-500' },
+        },
+        {
+            id: 'security',
+            type: 'security',
+            position: { x: 230, y: 400 },
+            data: { status: 'idle' }
+        },
+        {
+            id: 'data',
+            type: 'custom',
+            position: { x: 250, y: 600 },
+            data: { label: t.security.nodes.data.label, desc: t.security.nodes.data.desc, icon: Database, color: 'bg-slate-700' },
+        },
+    ];
+
+    const initialEdges = [
+        { id: 'e1-2', source: 'user', target: 'agent', animated: true, style: { stroke: '#64748b' } },
+        { id: 'e2-3', source: 'agent', target: 'security', animated: true, style: { stroke: '#64748b' } },
+        { id: 'e3-4', source: 'security', target: 'data', animated: false, style: { stroke: '#64748b', opacity: 0.2 } },
+    ];
+
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+    // Update nodes when language changes (re-initialize if needed, or better: use useEffect to update labels)
+    // Simple way: Key the component by language or just let `initialNodes` be re-created on mount if language changed? 
+    // React Flow `useNodesState` only uses initialNodes on first render.
+    // We should update nodes with `setNodes` when `t` changes.
+    // However, `t` changing might not be enough if we don't explicitly setNodes.
+    // Let's use a useEffect to update labels.
+
+    useEffect(() => {
+        setNodes((nds) => nds.map(n => {
+            if (n.id === 'user') return { ...n, data: { ...n.data, label: t.security.nodes.user.label, desc: t.security.nodes.user.desc } };
+            if (n.id === 'agent') return { ...n, data: { ...n.data, label: t.security.nodes.agent.label, desc: t.security.nodes.agent.desc } };
+            if (n.id === 'data') return { ...n, data: { ...n.data, label: t.security.nodes.data.label, desc: t.security.nodes.data.desc } };
+            return n;
+        }));
+    }, [t, setNodes]);
+
 
     const handleSimulate = (frame: 'allowed' | 'blocked') => {
         // Reset
@@ -179,13 +199,13 @@ export function SecuritySection() {
             <div className="container mx-auto px-4 mb-12 text-center">
                 <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full mb-4">
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    <span className="text-xs font-medium text-emerald-400 uppercase tracking-wider">Compliant by Design</span>
+                    <span className="text-xs font-medium text-emerald-400 uppercase tracking-wider">{t.security.chip}</span>
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-display">
-                    Bezpečnosť na úrovni <span className="text-indigo-500">jadra</span>
+                    {t.security.title.split(" ")[0]} <span className="text-indigo-500">{t.security.title.split(" ").slice(1).join(" ")}</span>
                 </h2>
                 <p className="text-slate-400 max-w-2xl mx-auto">
-                    Supabase RLS (Row Level Security) garantuje, že agenti nikdy neuvidia dáta, na ktoré nemajú oprávnenie. Žiadne "if conditions" v kóde, ale bezpečnosť v databáze.
+                    {t.security.description}
                 </p>
             </div>
 
@@ -197,14 +217,14 @@ export function SecuritySection() {
                         className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2"
                     >
                         <ShieldCheck className="w-4 h-4" />
-                        Simulate Authorized Access
+                        {t.security.simulate.allow}
                     </button>
                     <button
                         onClick={() => handleSimulate('blocked')}
                         className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium text-sm shadow-lg shadow-red-500/20 transition-all flex items-center gap-2"
                     >
                         <ShieldAlert className="w-4 h-4" />
-                        Simulate Unauthorized Breach
+                        {t.security.simulate.block}
                     </button>
                 </div>
 

@@ -1,0 +1,179 @@
+{
+    "nav": {
+        "concept": "Koncepcja",
+        "methodology": "Metodologia",
+        "useCases": "Użycie",
+        "security": "Bezpieczeństwo",
+        "plan": "Plan",
+        "bookConsultation": "Umów Konsultację"
+    },
+    "hero": {
+        "label": "Era Agentów",
+        "title": "Tworzenie i Zarządzanie",
+        "titleHighlight": "Systemami Autonomicznymi",
+        "description": "Pomagam firmom przejść od eksperymentów z AI do rzeczywistej automatyzacji produkcji. Bezpiecznie, skalowalnie i z mierzalnymi wynikami.",
+        "cta": "Rozpocznij Audyt AI",
+        "secondaryCta": "Więcej o usługach",
+        "stats": {
+            "leaders": "Liderzy chcą AI, ale...",
+            "integration": "Zawodzi przy integracji",
+            "api": "Problem Integracji API"
+        },
+        "scroll": "Scroll to explore"
+    },
+    "audit": {
+        "label": "Live AI audyt",
+        "title": "Odkryj Potencjał AI",
+        "titleHighlight": "Twojej Witryny",
+        "description": "Nasz Agent AI w czasie rzeczywistym analizuje Twoją stronę, model biznesowy i wysyła 3 konkretne propozycje automatyzacji.",
+        "inputUrl": "Strona internetowa",
+        "inputEmail": "Email do raportu",
+        "startAudit": "Rozpocznij Głęboki Audyt",
+        "placeholders": {
+            "url": "www.twojafirma.pl",
+            "email": "jan@firma.pl"
+        },
+        "analyzing": {
+            "title": "Analizuję {url}...",
+            "steps": [
+                "• Pobieranie treści...",
+                "• Identyfikacja procesów...",
+                "• Generowanie raportu..."
+            ]
+        },
+        "results": {
+            "badge": "Audyt Zakończony",
+            "scoreLabel": "WYNIK GOTOWOŚCI AI",
+            "opportunityLabel": "💡 Największa Szansa",
+            "emailSent": "Szczegółowy raport wysłaliśmy na",
+            "retry": "Wykonaj kolejny audyt"
+        },
+        "errors": {
+            "generic": "Nie udało się wykonać audytu.",
+            "connection": "Błąd połączenia. Spróbuj ponownie."
+        }
+    },
+    "roadmap": {
+        "title": "Plan Wdrożenia",
+        "subtitle": "Mierzalne wyniki w tygodniach, nie latach.",
+        "steps": {
+            "audit": {
+                "title": "Audyt AI",
+                "duration": "1-2 Tygodnie",
+                "desc": "Identyfikacja 'Low Hanging Fruit' i jakości danych."
+            },
+            "pilot": {
+                "title": "Pilot PoC",
+                "duration": "2-4 Tygodnie",
+                "desc": "Szybki funkcjonalny prototyp pod nadzorem architekta."
+            },
+            "hardening": {
+                "title": "Production Hardening",
+                "duration": "1-2 Miesiące",
+                "desc": "Rozwiązanie Enterprise (TypeScript, RAG pipeline, SOC2)."
+            }
+        },
+        "architect": {
+            "title": "Frakcyjny Architekt",
+            "description": "Elastyczna ekspertyza starszego architekta za ułamek kosztu pracownika pełnoetatowego.",
+            "cta": "Zbuduj Infrastrukturę"
+        },
+        "quote": "W 2026 roku nie decyduje jakość modelu AI, ale jakość architektury, która go otacza.",
+        "footer": "Built with Next.js 16 + React Flow."
+    },
+    "consultation": {
+        "title": "Konsultant AI",
+        "online": "Online",
+        "inputPlaceholder": "Wpisz wiadomość...",
+        "initialMessage": "Dzień dobry! 👋 Jestem twoim asystentem AI. Mogę pomóc w rezerwacji konsultacji, wyborze usługi lub odpowiedzieć na pytania dotyczące naszej pracy. Jak mogę pomóc?",
+        "suggested": {
+            "booking": "Chcę zarezerwować konsultację",
+            "services": "Jakie usługi oferujecie?",
+            "pricing": "Ile kosztuje audyt AI?",
+            "crm": "Czy macie doświadczenie z CRM?"
+        }
+    },
+    "useCases": {
+        "title": "5 Kluczowych Przypadków Użycia",
+        "subtitle": "Od teorii do liczb rzeczywistych. Rozwiązania na rok 2026.",
+        "items": {
+            "market": {
+                "title": "Market Researcher",
+                "desc": "Hierarchiczny system agentów monitorujący 50+ konkurentów.",
+                "roi": "95% oszczędności czasu"
+            },
+            "supply": {
+                "title": "Supply Chain",
+                "desc": "Autonomiczne negocjacje z dostawcami przez protokół A2A.",
+                "roi": "Milionowe oszczędności"
+            },
+            "compliance": {
+                "title": "Compliance Auditor",
+                "desc": "Monitoring EU AI Act i kontrola znaków wodnych.",
+                "roi": "Zero grzywien"
+            },
+            "finance": {
+                "title": "Financial Concierge",
+                "desc": "Rebalansowanie portfela i izolacja kont w czasie rzeczywistym.",
+                "roi": "+20% ROI"
+            },
+            "finops": {
+                "title": "FinOps Agent",
+                "desc": "Automatyczne przełączanie modeli dla optymalizacji kosztów.",
+                "roi": "-30% kosztów chmury"
+            }
+        },
+        "benefitLabel": "Korzyść"
+    },
+    "agentic": {
+        "title": "Agentic-as-a-Service",
+        "description": "Przejście od reaktywnego Chat AI do proaktywnego Agentic AI.",
+        "features": {
+            "autonomy": {
+                "title": "Autonomia",
+                "desc": "Agenci działają samodzielnie, nie są tylko narzędziami."
+            },
+            "eventDriven": {
+                "title": "Zdarzeniowość",
+                "desc": "Reagują na zdarzenia w czasie rzeczywistym (ceny, logi)."
+            },
+            "proactivity": {
+                "title": "Proaktywność",
+                "desc": "Nie czekają na polecenie. Rozwiązują problemy zanim powstaną."
+            }
+        },
+        "prediction": "Prognoza 2026: 40% aplikacji w przedsiębiorstwach będzie używać agentów.",
+        "switch": {
+            "chat": "2023: Chat AI",
+            "agent": "2026: Agentic AI"
+        },
+        "waiting": "Czekam na sygnał użytkownika..."
+    },
+    "security": {
+        "chip": "Compliant by Design",
+        "title": "Bezpieczeństwo na poziomie jądra",
+        "description": "Supabase RLS (Row Level Security) gwarantuje, że agenci nigdy nie zobaczą danych, do których nie mają uprawnień. Żadnych \"instrukcji warunkowych\" w kodzie, ale bezpieczeństwo w bazie danych.",
+        "simulate": {
+            "allow": "Symuluj Autoryzowany Dostęp",
+            "block": "Symuluj Nieautoryzowane Naruszenie"
+        },
+        "states": {
+            "denied": "ODMOWA DOSTĘPU",
+            "granted": "DOSTĘP PRZYZNANY"
+        },
+        "nodes": {
+            "user": {
+                "label": "Użytkownik / Menedżer",
+                "desc": "Inicjuje Żądanie"
+            },
+            "agent": {
+                "label": "Agent AI",
+                "desc": "Przetwarzanie i Pobieranie"
+            },
+            "data": {
+                "label": "Dane Wrażliwe",
+                "desc": "Szyfrowana Baza Danych"
+            }
+        }
+    }
+}

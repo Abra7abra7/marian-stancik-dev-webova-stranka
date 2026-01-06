@@ -1,0 +1,179 @@
+{
+    "nav": {
+        "concept": "Koncept",
+        "methodology": "Metodológia",
+        "useCases": "Use Cases",
+        "security": "Bezpečnosť",
+        "plan": "Plán",
+        "bookConsultation": "Rezervovať konzultáciu"
+    },
+    "hero": {
+        "label": "Agentová éra",
+        "title": "Vytváranie a riadenie",
+        "titleHighlight": "autonómnych systémov",
+        "description": "Pomáham firmám prejsť od experimentov s AI k reálnej produkčnej automatizácii. Bezpečne, škálovateľne a s merateľnými výsledkami.",
+        "cta": "Spustiť AI Audit",
+        "secondaryCta": "Viac o službách",
+        "stats": {
+            "leaders": "Lídrov chce AI, ale...",
+            "integration": "Zlyháva pri integrácii",
+            "api": "Problém API prepojení"
+        },
+        "scroll": "Scroll to explore"
+    },
+    "audit": {
+        "label": "Live AI Audit",
+        "title": "Zistite AI potenciál",
+        "titleHighlight": "vášho webu",
+        "description": "Náš AI Agent v reálnom čase prečíta vašu stránku, zanalyzuje biznis model a pošle vám 3 konkrétne návrhy na automatizáciu.",
+        "inputUrl": "Webová stránka",
+        "inputEmail": "Email pre report",
+        "startAudit": "Spustiť hĺbkový audit",
+        "placeholders": {
+            "url": "www.vasafirma.sk",
+            "email": "jan@firma.sk"
+        },
+        "analyzing": {
+            "title": "Analyzujem {url}...",
+            "steps": [
+                "• Sťahujem obsah...",
+                "• Identifikujem procesy...",
+                "• Generujem report..."
+            ]
+        },
+        "results": {
+            "badge": "Audit Dokončený",
+            "scoreLabel": "AI READINESS SCORE",
+            "opportunityLabel": "💡 Top Príležitosť",
+            "emailSent": "Detailný report sme odoslali na",
+            "retry": "Spraviť ďalší audit"
+        },
+        "errors": {
+            "generic": "Nepodarilo sa vykonať audit.",
+            "connection": "Chyba pripojenia. Skúste to prosím znova."
+        }
+    },
+    "roadmap": {
+        "title": "Implementačný Plán",
+        "subtitle": "Merateľné výsledky v horizonte týždňov, nie rokov.",
+        "steps": {
+            "audit": {
+                "title": "AI Audit",
+                "duration": "1-2 Týždne",
+                "desc": "Identifikácia 'Low Hanging Fruit' a kvality dát."
+            },
+            "pilot": {
+                "title": "Pilot PoC",
+                "duration": "2-4 Týždne",
+                "desc": "Rýchly funkčný prototyp pod vedením architekta."
+            },
+            "hardening": {
+                "title": "Production Hardening",
+                "duration": "1-2 Mesiace",
+                "desc": "Enterprise riešenie (TypeScript, RAG pipeline, SOC2)."
+            }
+        },
+        "architect": {
+            "title": "Frakčný Architekt",
+            "description": "Flexibilná expertíza seniorného architekta za zlomok ceny full-time zamestnanca.",
+            "cta": "Postaviť infraštruktúru"
+        },
+        "quote": "V roku 2026 nerozhoduje kvalita AI modelu, ale kvalita architektúry, ktorá ho obklopuje.",
+        "footer": "Built with Next.js 16 + React Flow."
+    },
+    "consultation": {
+        "title": "AI Konzultant",
+        "online": "Online",
+        "inputPlaceholder": "Napíšte správu...",
+        "initialMessage": "Dobrý deň! 👋 Som váš AI asistent. Môžem vám pomôcť s rezerváciou konzultácie, výberom služby alebo zodpovedať otázky o našej práci. Ako môžem pomôcť?",
+        "suggested": {
+            "booking": "Chcem rezervovať konzultáciu",
+            "services": "Aké služby ponúkate?",
+            "pricing": "Koľko stojí AI audit?",
+            "crm": "Máte skúsenosti s CRM?"
+        }
+    },
+    "useCases": {
+        "title": "5 Kľúčových Use Casov",
+        "subtitle": "Od teórie k reálnym číslam. Riešenia pre rok 2026.",
+        "items": {
+            "market": {
+                "title": "Market Researcher",
+                "desc": "Hierarchický systém agentov monitoruje 50+ konkurentov.",
+                "roi": "95% úspora času"
+            },
+            "supply": {
+                "title": "Supply Chain",
+                "desc": "Autonómne vyjednávanie s dodávateľmi cez A2A protokol.",
+                "roi": "Miliónové úspory"
+            },
+            "compliance": {
+                "title": "Compliance Auditor",
+                "desc": "EU AI Act monitoring a kontrola vodoznakov.",
+                "roi": "Zero pokuty"
+            },
+            "finance": {
+                "title": "Financial Concierge",
+                "desc": "Rebalans portfólia a izolácia účtov v reálnom čase.",
+                "roi": "+20% ROI"
+            },
+            "finops": {
+                "title": "FinOps Agent",
+                "desc": "Auto-switching modelov pre optimalizáciu nákladov.",
+                "roi": "-30% Cloud"
+            }
+        },
+        "benefitLabel": "Prínos"
+    },
+    "agentic": {
+        "title": "Agentic-as-a-Service",
+        "description": "Prechod od reaktívneho Chat AI k proaktívnemu Agentic AI.",
+        "features": {
+            "autonomy": {
+                "title": "Autonómia",
+                "desc": "Agenti konajú samostatne, nie sú len nástroje."
+            },
+            "eventDriven": {
+                "title": "Event-driven",
+                "desc": "Reagujú na udalosti v reálnom čase (ceny, logy)."
+            },
+            "proactivity": {
+                "title": "Proaktivita",
+                "desc": "Nečakajú na prompt. Riešia problémy skôr, než vzniknú."
+            }
+        },
+        "prediction": "Prediction 2026: 40% enterprise apps will use agents.",
+        "switch": {
+            "chat": "2023: Chat AI",
+            "agent": "2026: Agentic AI"
+        },
+        "waiting": "Waiting for user input..."
+    },
+    "security": {
+        "chip": "Compliant by Design",
+        "title": "Bezpečnosť na úrovni jadra",
+        "description": "Supabase RLS (Row Level Security) garantuje, že agenti nikdy neuvidia dáta, na ktoré nemajú oprávnenie. Žiadne \"if conditions\" v kóde, ale bezpečnosť v databáze.",
+        "simulate": {
+            "allow": "Simulate Authorized Access",
+            "block": "Simulate Unauthorized Breach"
+        },
+        "states": {
+            "denied": "ACCESS DENIED",
+            "granted": "ACCESS GRANTED"
+        },
+        "nodes": {
+            "user": {
+                "label": "User / Manager",
+                "desc": "Initiates Request"
+            },
+            "agent": {
+                "label": "AI Agent",
+                "desc": "Process & Fetch"
+            },
+            "data": {
+                "label": "Sensitive Data",
+                "desc": "Encrypted DB"
+            }
+        }
+    }
+}

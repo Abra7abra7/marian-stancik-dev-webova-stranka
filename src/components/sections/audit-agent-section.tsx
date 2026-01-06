@@ -4,8 +4,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Sparkles, Globe, Mail, AlertCircle, Check } from "lucide-react";
 import { analyzeWebsite } from "@/app/actions";
+import { useLanguage } from "@/lib/i18n/context";
 
 export function AuditAgentSection() {
+    const { t } = useLanguage();
     const [step, setStep] = useState<"input" | "analyzing" | "results">("input");
     const [formData, setFormData] = useState({
         url: "",
@@ -33,12 +35,12 @@ export function AuditAgentSection() {
                 setResult({ score: response.score, teaser: response.teaser || "" });
                 setStep("results");
             } else {
-                setError(response.error || "Nepodarilo sa vykonať audit.");
+                setError(response.error || t.audit.errors.generic);
                 setStep("input");
             }
         } catch (err) {
             console.error(err);
-            setError("Chyba pripojenia. Skúste to prosím znova.");
+            setError(t.audit.errors.connection);
             setStep("input");
         }
     };
@@ -56,13 +58,13 @@ export function AuditAgentSection() {
                     <div className="text-left space-y-6">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-mono uppercase tracking-wider">
                             <Sparkles className="w-3 h-3" />
-                            <span>Live AI Audit</span>
+                            <span>{t.audit.label}</span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-bold text-white font-display leading-tight">
-                            Zistite AI potenciál <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">vášho webu</span>
+                            {t.audit.title} <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{t.audit.titleHighlight}</span>
                         </h2>
                         <p className="text-slate-400 text-lg max-w-lg leading-relaxed font-light">
-                            Náš <strong>AI Agent</strong> v reálnom čase prečíta vašu stránku, zanalyzuje biznis model a pošle vám 3 konkrétne návrhy na automatizáciu.
+                            {t.audit.description}
                         </p>
 
                         <div className="flex items-center gap-4 text-sm text-slate-500 font-mono pt-4">
@@ -113,30 +115,30 @@ export function AuditAgentSection() {
                                             )}
 
                                             <div className="space-y-2">
-                                                <label className="text-sm text-slate-400 font-medium ml-1">Webová stránka</label>
+                                                <label className="text-sm text-slate-400 font-medium ml-1">{t.audit.inputUrl}</label>
                                                 <div className="relative">
                                                     <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                                                     <input
                                                         type="text"
-                                                        placeholder="www.vasafirma.sk"
+                                                        placeholder={t.audit.placeholders.url}
                                                         value={formData.url}
                                                         onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                                                        className="w-full bg-slate-950 border border-slate-700 rounded-xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500 transition-all placeholder:text-slate-600"
+                                                        className="w-full bg-slate-950 border border-slate-700 rounded-xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500 transition-all placeholder:text-slate-600 font-light"
                                                         required
                                                     />
                                                 </div>
                                             </div>
 
                                             <div className="space-y-2">
-                                                <label className="text-sm text-slate-400 font-medium ml-1">Email pre report</label>
+                                                <label className="text-sm text-slate-400 font-medium ml-1">{t.audit.inputEmail}</label>
                                                 <div className="relative">
                                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                                                     <input
                                                         type="email"
-                                                        placeholder="jan@firma.sk"
+                                                        placeholder={t.audit.placeholders.email}
                                                         value={formData.email}
                                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                                        className="w-full bg-slate-950 border border-slate-700 rounded-xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500 transition-all placeholder:text-slate-600"
+                                                        className="w-full bg-slate-950 border border-slate-700 rounded-xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500 transition-all placeholder:text-slate-600 font-light"
                                                         required
                                                     />
                                                 </div>
@@ -147,7 +149,7 @@ export function AuditAgentSection() {
                                                 className="w-full mt-4 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-indigo-500/25 flex items-center justify-center gap-2 group"
                                             >
                                                 <Sparkles className="w-5 h-5 group-hover:animate-pulse" />
-                                                Spustiť hĺbkový audit
+                                                {t.audit.startAudit}
                                             </button>
                                         </motion.form>
                                     )}
@@ -168,11 +170,11 @@ export function AuditAgentSection() {
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <h3 className="text-white font-medium text-xl">Analyzujem {formData.url}...</h3>
+                                                <h3 className="text-white font-medium text-xl">{t.audit.analyzing.title.replace("{url}", formData.url)}</h3>
                                                 <div className="flex flex-col gap-1 text-sm text-slate-500 font-mono">
-                                                    <span>• Sťahujem obsah...</span>
-                                                    <span className="animate-pulse delay-75">• Identifikujem procesy...</span>
-                                                    <span className="animate-pulse delay-150">• Generujem report...</span>
+                                                    {t.audit.analyzing.steps.map((step, i) => (
+                                                        <span key={i} className={i === 0 ? "" : i === 1 ? "animate-pulse delay-75" : "animate-pulse delay-150"}>{step}</span>
+                                                    ))}
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -188,18 +190,18 @@ export function AuditAgentSection() {
                                         >
                                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold uppercase tracking-wider">
                                                 <Check className="w-3 h-3" />
-                                                Audit Dokončený
+                                                {t.audit.results.badge}
                                             </div>
 
                                             <div className="p-6 bg-slate-800/30 rounded-2xl border border-white/5">
-                                                <p className="text-slate-400 text-sm mb-2 font-mono">AI READINESS SCORE</p>
+                                                <p className="text-slate-400 text-sm mb-2 font-mono">{t.audit.results.scoreLabel}</p>
                                                 <div className="text-6xl font-black text-white font-display mb-1 flex items-center justify-center gap-2">
                                                     {result.score}<span className="text-2xl text-slate-600 block mt-4">/100</span>
                                                 </div>
                                             </div>
 
                                             <div className="text-left space-y-2 bg-indigo-500/5 p-4 rounded-xl border border-indigo-500/10">
-                                                <p className="text-xs text-indigo-300 uppercase font-bold tracking-wider">💡 Top Príležitosť</p>
+                                                <p className="text-xs text-indigo-300 uppercase font-bold tracking-wider">{t.audit.results.opportunityLabel}</p>
                                                 <p className="text-slate-200 font-medium leading-relaxed">
                                                     {result.teaser}
                                                 </p>
@@ -207,13 +209,13 @@ export function AuditAgentSection() {
 
                                             <div className="pt-4 border-t border-slate-800">
                                                 <p className="text-slate-400 text-sm mb-4">
-                                                    Detailný report sme odoslali na <strong>{formData.email}</strong>
+                                                    {t.audit.results.emailSent} <strong>{formData.email}</strong>
                                                 </p>
                                                 <button
                                                     onClick={() => setStep("input")}
                                                     className="text-sm text-indigo-400 hover:text-white transition-colors"
                                                 >
-                                                    Spraviť ďalší audit
+                                                    {t.audit.results.retry}
                                                 </button>
                                             </div>
                                         </motion.div>

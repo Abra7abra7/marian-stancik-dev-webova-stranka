@@ -9,9 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.4",
+    "@ai-sdk/react": "^3.0.13",
     "@google/generative-ai": "^0.24.1",
     "@xyflow/react": "^12.10.0",
-    "ai": "^6.0.11",
+    "ai": "^6.0.13",
     "cheerio": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

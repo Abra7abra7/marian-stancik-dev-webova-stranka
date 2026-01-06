@@ -127,8 +127,9 @@ interface AIAnalysis {
 }
 
 async function runGeminiAnalysis(text: string, url: string): Promise<AIAnalysis> {
-  // Switched to 'gemini-2.5-flash' as requested by user (minimum 2.5)
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  // Switched to 'gemini-2.5-flash' as requested by user (minimum 2.5) or use env override
+  const modelName = process.env.NEXT_PUBLIC_AI_MODEL || "gemini-2.5-flash";
+  const model = genAI.getGenerativeModel({ model: modelName });
 
   const prompt = `
     You are an expert AI Business Consultant.

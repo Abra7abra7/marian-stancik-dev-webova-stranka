@@ -4,9 +4,11 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { MessageSquare, Network, Database, Mail, Server, ArrowRight } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/context";
 
 export function AgenticSection() {
     const [mode, setMode] = useState<"chat" | "agent">("chat");
+    const { t } = useLanguage();
 
     return (
         <section id="koncept" className="min-h-screen py-24 bg-slate-950 flex items-center relative overflow-hidden">
@@ -21,17 +23,17 @@ export function AgenticSection() {
                         transition={{ duration: 0.8 }}
                     >
                         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-display">
-                            Agentic-as-a-Service <span className="text-indigo-500">(AAaaS)</span>
+                            {t.agentic.title.split('(')[0]} <span className="text-indigo-500">(AAaaS)</span>
                         </h2>
                         <p className="text-lg text-slate-400 mb-8 leading-relaxed">
-                            Prechod od reaktívneho <span className="text-white font-medium">Chat AI</span> k proaktívnemu <span className="text-indigo-400 font-medium">Agentic AI</span>.
+                            {t.agentic.description}
                         </p>
 
                         <ul className="space-y-4 mb-10">
                             {[
-                                { title: "Autonómia", desc: "Agenti konajú samostatne, nie sú len nástroje." },
-                                { title: "Event-driven", desc: "Reagujú na udalosti v reálnom čase (ceny, logy)." },
-                                { title: "Proaktivita", desc: "Nečakajú na prompt. Riešia problémy skôr, než vzniknú." }
+                                { title: t.agentic.features.autonomy.title, desc: t.agentic.features.autonomy.desc },
+                                { title: t.agentic.features.eventDriven.title, desc: t.agentic.features.eventDriven.desc },
+                                { title: t.agentic.features.proactivity.title, desc: t.agentic.features.proactivity.desc }
                             ].map((item, i) => (
                                 <li key={i} className="flex items-start gap-3">
                                     <div className="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 mt-1">
@@ -47,7 +49,7 @@ export function AgenticSection() {
 
                         <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 inline-block">
                             <p className="text-emerald-400 text-sm font-mono">
-                                Prediction 2026: 40% enterprise apps will use agents.
+                                {t.agentic.prediction}
                             </p>
                         </div>
                     </motion.div>
@@ -69,7 +71,7 @@ export function AgenticSection() {
                                     mode === "chat" ? "bg-white text-slate-950 shadow-lg" : "text-slate-400 hover:text-white"
                                 )}
                             >
-                                2023: Chat AI
+                                {t.agentic.switch.chat}
                             </button>
                             <button
                                 onClick={() => setMode("agent")}
@@ -78,7 +80,7 @@ export function AgenticSection() {
                                     mode === "agent" ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25" : "text-slate-400 hover:text-white"
                                 )}
                             >
-                                2026: Agentic AI
+                                {t.agentic.switch.agent}
                             </button>
                         </div>
 
@@ -98,7 +100,7 @@ export function AgenticSection() {
                                     </div>
                                     <div className="w-64 h-12 bg-white/5 rounded-lg animate-pulse" />
                                     <div className="w-48 h-12 bg-white/5 rounded-lg animate-pulse delay-100" />
-                                    <p className="text-slate-500 text-sm mt-4">Waiting for user input...</p>
+                                    <p className="text-slate-500 text-sm mt-4">{t.agentic.waiting}</p>
                                 </motion.div>
                             ) : (
                                 <motion.div

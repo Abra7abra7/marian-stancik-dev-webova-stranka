@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit, Inter, JetBrains_Mono } from "next/font/google";
+import { LanguageProvider } from "@/lib/i18n/context";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -17,11 +18,6 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Marian Stancik - Industrial AI",
-  description: "Od experimentov k autonómnemu podniku",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,7 +28,9 @@ export default function RootLayout({
       <body
         className={`${outfit.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased bg-slate-950 text-slate-100 font-sans`}
       >
-        {children}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

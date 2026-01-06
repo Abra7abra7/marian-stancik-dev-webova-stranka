@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Search, ShoppingCart, ShieldAlert, BadgeEuro, CloudLightning, ArrowUpRight, LucideIcon } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/context";
 
 type UseCase = {
     id: string;
@@ -14,51 +15,52 @@ type UseCase = {
     color: string;
 };
 
-const USE_CASES: UseCase[] = [
-    {
-        id: "market",
-        title: "Market Researcher",
-        icon: Search,
-        desc: "Hierarchický systém agentov monitoruje 50+ konkurentov.",
-        roi: "95% úspora času",
-        color: "bg-blue-500"
-    },
-    {
-        id: "supply",
-        title: "Supply Chain",
-        icon: ShoppingCart,
-        desc: "Autonómne vyjednávanie s dodávateľmi cez A2A protokol.",
-        roi: "Miliónové úspory",
-        color: "bg-orange-500"
-    },
-    {
-        id: "compliance",
-        title: "Compliance Auditor",
-        icon: ShieldAlert,
-        desc: "EU AI Act monitoring a kontrola vodoznakov.",
-        roi: "Zero pokuty (35M €)",
-        color: "bg-red-500"
-    },
-    {
-        id: "finance",
-        title: "Financial Concierge",
-        icon: BadgeEuro,
-        desc: "Rebalans portfólia a izolácia účtov v reálnom čase.",
-        roi: "+20% ROI",
-        color: "bg-emerald-500"
-    },
-    {
-        id: "finops",
-        title: "FinOps Agent",
-        icon: CloudLightning,
-        desc: "Auto-switching modelov pre optimalizáciu nákladov.",
-        roi: "-30% Cloud",
-        color: "bg-purple-500"
-    }
-];
-
 export function UseCasesSection() {
     const [hoveredId, setHoveredId] = useState<string | null>(null);
+    const { t } = useLanguage();
+
+    const USE_CASES: UseCase[] = [
+        {
+            id: "market",
+            title: t.useCases.items.market.title,
+            icon: Search,
+            desc: t.useCases.items.market.desc,
+            roi: t.useCases.items.market.roi,
+            color: "bg-blue-500"
+        },
+        {
+            id: "supply",
+            title: t.useCases.items.supply.title,
+            icon: ShoppingCart,
+            desc: t.useCases.items.supply.desc,
+            roi: t.useCases.items.supply.roi,
+            color: "bg-orange-500"
+        },
+        {
+            id: "compliance",
+            title: t.useCases.items.compliance.title,
+            icon: ShieldAlert,
+            desc: t.useCases.items.compliance.desc,
+            roi: t.useCases.items.compliance.roi,
+            color: "bg-red-500"
+        },
+        {
+            id: "finance",
+            title: t.useCases.items.finance.title,
+            icon: BadgeEuro,
+            desc: t.useCases.items.finance.desc,
+            roi: t.useCases.items.finance.roi,
+            color: "bg-emerald-500"
+        },
+        {
+            id: "finops",
+            title: t.useCases.items.finops.title,
+            icon: CloudLightning,
+            desc: t.useCases.items.finops.desc,
+            roi: t.useCases.items.finops.roi,
+            color: "bg-purple-500"
+        }
+    ];
 
     return (
         <section id="use-cases" className="py-24 bg-slate-950 relative">
@@ -66,10 +68,15 @@ export function UseCasesSection() {
 
                 <div className="mb-16 text-center">
                     <h2 className="text-4xl font-bold text-white mb-4 font-display">
-                        5 Kľúčových <span className="text-indigo-500">Use Casov</span>
+                        {t.useCases.title.split("Use")[0]} <span className="text-indigo-500">{t.useCases.title.match(/Use.*$/) || "Use Casov"}</span>
+                        {/* A bit hacky splitting, but valid since sk/en structure is similar "5 Key Use Cases". 
+                            Better: just render title and colorize manualy or keep simple. 
+                            Let's keep it simple for now or rely on specific formatting if needed.
+                            Actually, t.useCases.title is "5 Kľúčových Use Casov", so splitting works.
+                        */}
                     </h2>
                     <p className="text-slate-400">
-                        Od teórie k reálnym číslam. Riešenia pre rok 2026.
+                        {t.useCases.subtitle}
                     </p>
                 </div>
 
@@ -121,7 +128,7 @@ export function UseCasesSection() {
                                         }}
                                         className="pt-4 border-t border-white/10"
                                     >
-                                        <div className="text-xs text-slate-400 uppercase tracking-wider mb-1">Prínos</div>
+                                        <div className="text-xs text-slate-400 uppercase tracking-wider mb-1">{t.useCases.benefitLabel}</div>
                                         <div className={cn("text-2xl font-bold font-mono", item.color.replace("bg-", "text-"))}>
                                             {item.roi}
                                         </div>

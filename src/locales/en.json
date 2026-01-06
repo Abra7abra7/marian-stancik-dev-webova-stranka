@@ -1,0 +1,179 @@
+{
+    "nav": {
+        "concept": "Concept",
+        "methodology": "Methodology",
+        "useCases": "Use Cases",
+        "security": "Security",
+        "plan": "Roadmap",
+        "bookConsultation": "Book Consultation"
+    },
+    "hero": {
+        "label": "The Agentic Era",
+        "title": "Building and Managing",
+        "titleHighlight": "Autonomous Systems",
+        "description": "Helping companies move from AI experiments to real production automation. Secure, scalable, and with measurable results.",
+        "cta": "Start AI Audit",
+        "secondaryCta": "More about services",
+        "stats": {
+            "leaders": "Leaders want AI, but...",
+            "integration": "Fails at integration",
+            "api": "API Integration Problem"
+        },
+        "scroll": "Scroll to explore"
+    },
+    "audit": {
+        "label": "Live AI Audit",
+        "title": "Discover the AI Potential",
+        "titleHighlight": "of Your Website",
+        "description": "Our AI Agent reads your site in real-time, analyzes your business model, and sends you 3 concrete automation proposals.",
+        "inputUrl": "Website URL",
+        "inputEmail": "Email for Report",
+        "startAudit": "Start Deep Audit",
+        "placeholders": {
+            "url": "www.yourcompany.com",
+            "email": "john@company.com"
+        },
+        "analyzing": {
+            "title": "Analyzing {url}...",
+            "steps": [
+                "• Downloading content...",
+                "• Identifying processes...",
+                "• Generating report..."
+            ]
+        },
+        "results": {
+            "badge": "Audit Completed",
+            "scoreLabel": "AI READINESS SCORE",
+            "opportunityLabel": "💡 Top Opportunity",
+            "emailSent": "Detailed report sent to",
+            "retry": "Start another audit"
+        },
+        "errors": {
+            "generic": "Failed to perform audit.",
+            "connection": "Connection error. Please try again."
+        }
+    },
+    "roadmap": {
+        "title": "Implementation Plan",
+        "subtitle": "Measurable results in weeks, not years.",
+        "steps": {
+            "audit": {
+                "title": "AI Audit",
+                "duration": "1-2 Weeks",
+                "desc": "Identifying 'Low Hanging Fruit' and data quality."
+            },
+            "pilot": {
+                "title": "Pilot PoC",
+                "duration": "2-4 Weeks",
+                "desc": "Rapid functional prototype led by an architect."
+            },
+            "hardening": {
+                "title": "Production Hardening",
+                "duration": "1-2 Months",
+                "desc": "Enterprise solution (TypeScript, RAG pipeline, SOC2)."
+            }
+        },
+        "architect": {
+            "title": "Fractional Architect",
+            "description": "Flexible senior architect expertise for a fraction of full-time employee cost.",
+            "cta": "Build Infrastructure"
+        },
+        "quote": "In 2026, it's not the AI model quality that matters, but the quality of the architecture surrounding it.",
+        "footer": "Built with Next.js 16 + React Flow."
+    },
+    "consultation": {
+        "title": "AI Consultant",
+        "online": "Online",
+        "inputPlaceholder": "Type a message...",
+        "initialMessage": "Hello! 👋 I am your AI assistant. I can help you book a consultation, choose a service, or answer questions about our work. How can I help?",
+        "suggested": {
+            "booking": "I want to book a consultation",
+            "services": "What services do you offer?",
+            "pricing": "How much does an AI audit cost?",
+            "crm": "Do you have experience with CRM?"
+        }
+    },
+    "useCases": {
+        "title": "5 Key Use Cases",
+        "subtitle": "From theory to real numbers. Solutions for 2026.",
+        "items": {
+            "market": {
+                "title": "Market Researcher",
+                "desc": "Hierarchical agent system monitoring 50+ competitors.",
+                "roi": "95% time saved"
+            },
+            "supply": {
+                "title": "Supply Chain",
+                "desc": "Autonomous negotiation with suppliers via A2A protocol.",
+                "roi": "Millions in savings"
+            },
+            "compliance": {
+                "title": "Compliance Auditor",
+                "desc": "EU AI Act monitoring and watermark control.",
+                "roi": "Zero fines"
+            },
+            "finance": {
+                "title": "Financial Concierge",
+                "desc": "Portfolio rebalancing and account isolation in real-time.",
+                "roi": "+20% ROI"
+            },
+            "finops": {
+                "title": "FinOps Agent",
+                "desc": "Auto-switching models for cost optimization.",
+                "roi": "-30% Cloud costs"
+            }
+        },
+        "benefitLabel": "Benefit"
+    },
+    "agentic": {
+        "title": "Agentic-as-a-Service",
+        "description": "Transition from reactive Chat AI to proactive Agentic AI.",
+        "features": {
+            "autonomy": {
+                "title": "Autonomy",
+                "desc": "Agents act independently, they are not just tools."
+            },
+            "eventDriven": {
+                "title": "Event-driven",
+                "desc": "React to real-time events (prices, logs)."
+            },
+            "proactivity": {
+                "title": "Proactivity",
+                "desc": "They don't wait for a prompt. They solve problems before they arise."
+            }
+        },
+        "prediction": "Prediction 2026: 40% enterprise apps will use agents.",
+        "switch": {
+            "chat": "2023: Chat AI",
+            "agent": "2026: Agentic AI"
+        },
+        "waiting": "Waiting for user input..."
+    },
+    "security": {
+        "chip": "Compliant by Design",
+        "title": "Core-Level Security",
+        "description": "Supabase RLS (Row Level Security) guarantees that agents never see data they are not authorized to. No \"if conditions\" in code, but security in the database.",
+        "simulate": {
+            "allow": "Simulate Authorized Access",
+            "block": "Simulate Unauthorized Breach"
+        },
+        "states": {
+            "denied": "ACCESS DENIED",
+            "granted": "ACCESS GRANTED"
+        },
+        "nodes": {
+            "user": {
+                "label": "User / Manager",
+                "desc": "Initiates Request"
+            },
+            "agent": {
+                "label": "AI Agent",
+                "desc": "Process & Fetch"
+            },
+            "data": {
+                "label": "Sensitive Data",
+                "desc": "Encrypted DB"
+            }
+        }
+    }
+}

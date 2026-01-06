@@ -2,50 +2,53 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight, Calendar, UserCheck, Rocket } from "lucide-react";
-
-const STEPS = [
-    {
-        id: 1,
-        title: "AI Audit",
-        duration: "1-2 Týždne",
-        desc: "Identifikácia 'Low Hanging Fruit' a kvality dát.",
-        icon: CheckCircle2,
-        color: "text-blue-400",
-        bg: "bg-blue-500/10",
-        border: "border-blue-500/20"
-    },
-    {
-        id: 2,
-        title: "Pilot PoC",
-        duration: "2-4 Týždne",
-        desc: "Rýchly funkčný prototyp pod vedením architekta.",
-        icon: Rocket,
-        color: "text-indigo-400",
-        bg: "bg-indigo-500/10",
-        border: "border-indigo-500/20"
-    },
-    {
-        id: 3,
-        title: "Production Hardening",
-        duration: "1-2 Mesiace",
-        desc: "Enterprise riešenie (TypeScript, RAG pipeline, SOC2).",
-        icon: UserCheck,
-        color: "text-emerald-400",
-        bg: "bg-emerald-500/10",
-        border: "border-emerald-500/20"
-    }
-];
+import { useLanguage } from "@/lib/i18n/context";
 
 export function RoadmapSection() {
+    const { t } = useLanguage();
+
+    const STEPS = [
+        {
+            id: 1,
+            title: t.roadmap.steps.audit.title,
+            duration: t.roadmap.steps.audit.duration,
+            desc: t.roadmap.steps.audit.desc,
+            icon: CheckCircle2,
+            color: "text-blue-400",
+            bg: "bg-blue-500/10",
+            border: "border-blue-500/20"
+        },
+        {
+            id: 2,
+            title: t.roadmap.steps.pilot.title,
+            duration: t.roadmap.steps.pilot.duration,
+            desc: t.roadmap.steps.pilot.desc,
+            icon: Rocket,
+            color: "text-indigo-400",
+            bg: "bg-indigo-500/10",
+            border: "border-indigo-500/20"
+        },
+        {
+            id: 3,
+            title: t.roadmap.steps.hardening.title,
+            duration: t.roadmap.steps.hardening.duration,
+            desc: t.roadmap.steps.hardening.desc,
+            icon: UserCheck,
+            color: "text-emerald-400",
+            bg: "bg-emerald-500/10",
+            border: "border-emerald-500/20"
+        }
+    ];
+
     return (
         <section id="plán" className="py-24 bg-slate-950 relative overflow-hidden">
             <div className="container mx-auto px-4 relative z-10">
 
                 <div className="text-center mb-20">
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-display">
-                        Implementačný Plán
+                        {t.roadmap.title}
                     </h2>
-                    <p className="text-slate-400">Merateľné výsledky v horizonte týždňov, nie rokov.</p>
+                    <p className="text-slate-400">{t.roadmap.subtitle}</p>
                 </div>
 
                 <div className="max-w-4xl mx-auto relative">
@@ -97,26 +100,26 @@ export function RoadmapSection() {
                         <div className="absolute inset-0 bg-indigo-500/5 group-hover:bg-indigo-500/10 transition-colors" />
 
                         <h3 className="text-2xl font-bold text-white mb-4 relative z-10">
-                            Frakčný Architekt
+                            {t.roadmap.architect.title}
                         </h3>
                         <p className="text-slate-400 mb-8 relative z-10">
-                            Flexibilná expertíza seniorného architekta za zlomok ceny full-time zamestnanca.
+                            {t.roadmap.architect.description}
                         </p>
 
-                        <button className="bg-white text-slate-950 px-8 py-3 rounded-full font-bold hover:bg-slate-200 transition-colors inline-flex items-center gap-2 group-hover:scale-105 transition-transform">
-                            Postaviť infraštruktúru
+                        <a href="#audit" className="bg-white text-slate-950 px-8 py-3 rounded-full font-bold hover:bg-slate-200 transition-colors inline-flex items-center gap-2 group-hover:scale-105 transition-transform">
+                            {t.roadmap.architect.cta}
                             <ArrowRight className="w-4 h-4" />
-                        </button>
+                        </a>
                     </div>
 
                     <p className="mt-12 text-slate-500 text-sm italic">
-                        "V roku 2026 nerozhoduje kvalita AI modelu, ale kvalita architektúry, ktorá ho obklopuje."
+                        "{t.roadmap.quote}"
                     </p>
                 </motion.div>
 
                 {/* Simple Footer */}
                 <footer className="mt-32 border-t border-white/5 pt-8 pb-8 text-center text-slate-600 text-sm">
-                    <p>&copy; 2026 <a href="https://marianstancik.dev" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">marianstancik.dev</a>. Built with Next.js 16 + React Flow.</p>
+                    <p>&copy; 2026 <a href="https://marianstancik.dev" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">marianstancik.dev</a>. {t.roadmap.footer}</p>
                 </footer>
 
             </div>

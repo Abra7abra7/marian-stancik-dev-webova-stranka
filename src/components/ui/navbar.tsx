@@ -4,9 +4,21 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/context";
+import { ConsultationModal } from "./consultation-modal";
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { t, language, setLanguage } = useLanguage();
+
+    const navItems = [
+        { label: t.nav.concept, href: "#concept" },
+        { label: t.nav.methodology, href: "#methodology" },
+        { label: t.nav.useCases, href: "#use-cases" },
+        { label: t.nav.security, href: "#security" },
+        { label: t.nav.plan, href: "#plán" },
+    ];
 
     return (
         <>
@@ -23,22 +35,40 @@ export function Navbar() {
                 </div>
 
                 <nav className="hidden md:flex items-center gap-8">
-                    {["Koncept", "Metodológia", "Use Cases", "Bezpečnosť", "Plán"].map(
-                        (item, i) => (
+                    {navItems.map(
+                        (item) => (
                             <Link
-                                key={item}
-                                href={`#${item.toLowerCase().replace(" ", "-")}`}
+                                key={item.label}
+                                href={item.href}
                                 className="text-sm text-slate-400 hover:text-white transition-colors font-medium"
                             >
-                                {item}
+                                {item.label}
                             </Link>
                         )
                     )}
                 </nav>
 
-                <div className="hidden md:block">
-                    <button className="px-4 py-2 text-xs font-medium text-slate-950 bg-white hover:bg-slate-200 rounded-full transition-colors font-mono uppercase tracking-wider">
-                        Rezervovať konzultáciu
+                <div className="hidden md:flex items-center gap-4">
+                    <div className="flex items-center bg-slate-800 rounded-full p-1 border border-white/10">
+                        {(['sk', 'en', 'pl'] as const).map((lang) => (
+                            <button
+                                key={lang}
+                                onClick={() => setLanguage(lang)}
+                                className={`px-2 py-1 text-xs font-bold rounded-full transition-all ${language === lang
+                                        ? "bg-white text-slate-950"
+                                        : "text-slate-400 hover:text-white"
+                                    } uppercase`}
+                            >
+                                {lang}
+                            </button>
+                        ))}
+                    </div>
+
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="px-4 py-2 text-xs font-medium text-slate-950 bg-white hover:bg-slate-200 rounded-full transition-colors font-mono uppercase tracking-wider"
+                    >
+                        {t.nav.bookConsultation}
                     </button>
                 </div>
 
@@ -62,26 +92,49 @@ export function Navbar() {
                         className="fixed inset-0 z-40 bg-slate-950 pt-24 px-6 md:hidden flex flex-col items-center gap-8"
                     >
                         <nav className="flex flex-col items-center gap-6">
-                            {["Koncept", "Metodológia", "Use Cases", "Bezpečnosť", "Plán"].map(
+                            {navItems.map(
                                 (item) => (
                                     <Link
-                                        key={item}
-                                        href={`#${item.toLowerCase().replace(" ", "-")}`}
+                                        key={item.label}
+                                        href={item.href}
                                         onClick={() => setIsOpen(false)}
                                         className="text-2xl text-slate-300 hover:text-white transition-colors font-medium font-display"
                                     >
-                                        {item}
+                                        {item.label}
                                     </Link>
                                 )
                             )}
                         </nav>
 
-                        <button className="px-8 py-3 text-sm font-bold text-slate-950 bg-white hover:bg-slate-200 rounded-full transition-colors font-mono uppercase tracking-wider">
-                            Rezervovať konzultáciu
+                        <div className="flex items-center bg-slate-800 rounded-full p-1 border border-white/10">
+                            {(['sk', 'en', 'pl'] as const).map((lang) => (
+                                <button
+                                    key={lang}
+                                    onClick={() => { setLanguage(lang); setIsOpen(false); }}
+                                    className={`px-4 py-2 text-sm font-bold rounded-full transition-all ${language === lang
+                                            ? "bg-white text-slate-950"
+                                            : "text-slate-400 hover:text-white"
+                                        } uppercase`}
+                                >
+                                    {lang}
+                                </button>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={() => { setIsModalOpen(true); setIsOpen(false); }}
+                            className="px-8 py-3 text-sm font-bold text-slate-950 bg-white hover:bg-slate-200 rounded-full transition-colors font-mono uppercase tracking-wider"
+                        >
+                            {t.nav.bookConsultation}
                         </button>
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            <ConsultationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
         </>
     );
 }
