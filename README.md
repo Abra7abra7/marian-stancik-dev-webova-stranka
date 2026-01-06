@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dokumentácia Projektu: Marian Stancik AI Web
 
-## Getting Started
+Tento dokument poskytuje kompletný technický prehľad o projekte osobnej webovej stránky a AI agenta pre Mariana Stančíka.
 
-First, run the development server:
+## 1. Prehľad Projektu
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Projekt je moderná, interaktívna webová stránka (Portfolio/Landing Page) postavená na **Next.js 15**, ktorá integruje pokročilého **AI Agenta** na kvalifikáciu leadov a rezerváciu konzultácií. Stránka je plne lokalizovaná (SK, EN, PL) a optimalizovaná pre výkon a SEO.
+
+## 2. Technologický Stack
+
+### Core
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router, Server Components)
+- **Jazyk:** TypeScript
+- **Runtime:** Node.js
+
+### UI & Styling
+- **Styling:** Tailwind CSS
+- **Komponenty:** Shadcn/ui (Radix UI primitives)
+- **Animácie:** Framer Motion (pre vstupné animácie a interakcie)
+- **Ikony:** Lucide React
+
+### AI & Backend
+- **AI SDK:** Vercel AI SDK Core (`ai`), Google Provider (`@ai-sdk/google`), React Hooks (`@ai-sdk/react`)
+- **Model:** Google Gemini 2.5 Flash (nastaviteľné cez `.env`)
+- **Emailing:** Resend (pre notifikácie o leadoch)
+- **Validácia:** Zod (pre validáciu vstupov a AI tools)
+
+## 3. Štruktúra Projektu
+
+```
+/src
+├── app/
+│   ├── api/chat/route.ts       # Hlavný endpoint pre AI chata
+│   ├── actions.ts              # Server Actions (odosielanie emailov)
+│   ├── icon.tsx, layout.tsx    # Globálne nastavenia, favicon
+│   └── page.tsx                # Hlavná landing page
+├── components/
+│   ├── sections/               # Hlavné sekcie stránky (Hero, Roadmap, atď.)
+│   └── ui/                     # Znovupoužiteľné UI komponenty (Button, Modal...)
+│       └── consultation-modal.tsx # Klient pre chat okno
+├── lib/
+│   ├── i18n/                   # Logika pre jazyky (dictionaries.ts)
+│   └── hooks/                  # Vlastné hooky (use-language.ts)
+├── locales/                    # Prekladové súbory
+│   ├── sk.json
+│   ├── en.json
+│   └── pl.json
+└── public/                     # Statické asety
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 4. API a Služby
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4.1 AI Chat Endpoint (`/api/chat`)
+Tento endpoint zabezpečuje komunikáciu s LLM modelom.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Cesta:** `/api/chat/route.ts` (POST)
+- **Funkcionalita:**
+    - Prijíma históriu správ.
+    - Normalizuje formát správ pomocou `convertToModelMessages`.
+    - Definuje nástroje (Tools), napr. `saveLead`.
+    - Streamuje odpoveď späť do klienta pomocou `toUIMessageStreamResponse`.
+- **Systémový Prompt:** Definuje osobnosť agenta (profesionálny, zameraný na predaj, "weeks not years" mentalita).
 
-## Learn More
+### 4.2 Nástroje (Tools)
+Agent má prístup k nástrojom, ktoré mu umožňujú vykonávať akcie.
 
-To learn more about Next.js, take a look at the following resources:
+- **`saveLead`**:
+    - **Účel:** Uloží kontaktné údaje záujemcu a pošle notifikáciu.
+    - **Parametre:** `name`, `email` (povinný), `phone`, `company`, `interest`.
+    - **Akcia:** Zavolá Resend API na odoslanie emailu na `marian@stancik.ai`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4.3 Server Actions (`actions.ts`)
+Obsahuje serverové funkcie pre formuláre a emailing.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **`sendEmail`**: Odosiela transakčné emaily cez Resend. Používa sa pri manuálnom audite alebo kontaktnom formulári.
 
-## Deploy on Vercel
+## 5. Externé Služby
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Služba | Účel | Konfigurácia |
+|--------|------|--------------|
+| **Vercel** | Hosting a CI/CD pipeline | Automatický deploy z `main` vetvy |
+| **Google AI Studio** | Poskytovateľ LLM (Gemini) | API kľúč v `GOOGLE_GENERATIVE_AI_API_KEY` |
+| **Resend** | Odosielanie emailov | API kľúč v `RESEND_API_KEY` |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 6. Lokalizácia (i18n)
+
+Implementovali sme vlastné, ľahké riešenie pre preklady bez middleware bloatu.
+
+- **Súbory:** JSON súbory v `src/locales/` obsahujú kľúč-hodnota páry.
+- **Hook:** `useLanguage()` (v `src/lib/hooks/use-language.ts`)
+    - Udržiava stav vybraného jazyka.
+    - Poskytuje funkciu `t(key)` na získanie prekladu.
+- **Použitie:** V komponentoch sa texty nahrádzajú volaním `t('hero.title')`.
+
+## 7. Proces Vývoja a Nasadenia
+
+1.  **Lokálny Vývoj:**
+    - Príkaz: `npm run dev`
+    - Beží na: `http://localhost:3000`
+2.  **Build:**
+    - Príkaz: `npm run build`
+    - Kontroluje TypeScript chyby a optimalizuje kód.
+3.  **Nasadenie (Deploy):**
+    - **Automatické:** Push do vetvy `main` spustí Vercel build.
+    - **Manuálne:** Cez Vercel CLI alebo dashboard.
+
+## 8. Bezpečnosť
+
+- **API Kľúče:** Všetky citlivé kľúče (Google, Resend) sú v `.env` súbore a nie sú prístupné na kliente (okrem `NEXT_PUBLIC_` premenných, ak by boli potrebné).
+- **Validácia:** Vstupy do AI a formulárov sú validované cez Zod schémy, aby sa predišlo injection útokom alebo chybám.
