@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Industrial AI 2026",
+  title: "Marian Stancik - Industrial AI",
   description: "Od experimentov k autonómnemu podniku",
 };
 

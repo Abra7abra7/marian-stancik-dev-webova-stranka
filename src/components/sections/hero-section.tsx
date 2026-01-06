@@ -49,7 +49,7 @@ export function HeroSection() {
     const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
     return (
-        <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-slate-950">
+        <section className="relative min-h-screen md:h-screen w-full flex items-center justify-center overflow-hidden bg-slate-950 pt-32 pb-12 md:py-0">
             {/* Background Grid */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/50"></div>
@@ -62,9 +62,9 @@ export function HeroSection() {
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 1, ease: "easeOut" }}
-                    className="mb-6 relative inline-block"
+                    className="mb-4 md:mb-6 relative inline-block"
                 >
-                    <h1 className="text-[120px] md:text-[180px] font-black leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-800 font-display select-none">
+                    <h1 className="text-[60px] md:text-[180px] font-black leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-800 font-display select-none">
                         2026
                     </h1>
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white to-slate-800 opacity-20 blur-3xl -z-10 animate-pulse"></div>
@@ -74,7 +74,7 @@ export function HeroSection() {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.5, duration: 0.8 }}
-                    className="text-4xl md:text-6xl font-bold text-white mb-6 font-display tracking-tight"
+                    className="text-3xl md:text-6xl font-bold text-white mb-4 md:mb-6 font-display tracking-tight"
                 >
                     Éra priemyselnej AI
                 </motion.h2>
@@ -83,13 +83,13 @@ export function HeroSection() {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.7, duration: 0.8 }}
-                    className="text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto mb-16 font-light"
+                    className="text-lg md:text-2xl text-slate-400 max-w-2xl mx-auto mb-10 md:mb-16 font-light"
                 >
                     Od experimentov k <span className="text-indigo-400 font-normal">autonómnemu podniku</span>
                 </motion.p>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
                     <motion.div
                         initial={{ y: 40, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
@@ -134,7 +134,7 @@ export function HeroSection() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 2, duration: 1 }}
-                    className="mt-12 text-sm text-slate-500 font-mono uppercase tracking-widest"
+                    className="mt-8 md:mt-12 text-sm text-slate-500 font-mono uppercase tracking-widest"
                 >
                     Scroll to explore
                 </motion.div>

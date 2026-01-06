@@ -116,7 +116,7 @@ export function RoadmapSection() {
 
                 {/* Simple Footer */}
                 <footer className="mt-32 border-t border-white/5 pt-8 pb-8 text-center text-slate-600 text-sm">
-                    <p>&copy; 2026 Industrial AI Solutions. Built with Next.js 16 + React Flow.</p>
+                    <p>&copy; 2026 <a href="https://marianstancik.dev" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">marianstancik.dev</a>. Built with Next.js 16 + React Flow.</p>
                 </footer>
 
             </div>
