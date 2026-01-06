@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { X, Send, Bot, User, Sparkles } from "lucide-react";
+import { X, Send, Bot, User, Sparkles, Loader2, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/lib/i18n/context";
@@ -15,21 +15,13 @@ export function ConsultationModal({ isOpen, onClose }: ConsultationModalProps) {
     const { t } = useLanguage();
     const [input, setInput] = useState("");
 
-    // We need to re-initialize useChat when language changes to update the welcome message?
-    // Actually useChat initialMessages are only used on mount. 
-    // For a simple fix, we can just rely on the fact that if the user switches language, they might reload or we accept English welcome in Slovak context for a second.
-    // BETTER: Use key to force remount or update messages? 
-    // Simplest: Just let it be for now, or use a useEffect to append a translated welcome message if empty?
-    // Actually, `useChat` keeps state. Let's just use the translated string for NEW sessions or if we force reset.
-    // For now, I will use `t.consultation.initialMessage` directly in the config, which works on initial load.
-
     const { messages, sendMessage, status, stop } = useChat({
         // @ts-ignore
         initialMessages: [
             {
                 id: "welcome",
                 role: "assistant",
-                parts: [{ type: 'text', text: t.consultation.initialMessage }]
+                content: t.consultation.initialMessage
             }
         ],
     });
@@ -61,7 +53,7 @@ export function ConsultationModal({ isOpen, onClose }: ConsultationModalProps) {
         try {
             await sendMessage({
                 role: "user",
-                parts: [{ type: "text", text: currentInput }]
+                parts: [{ type: 'text', text: currentInput }]
             });
         } catch (error) {
             console.error("Failed to send message:", error);
@@ -80,7 +72,7 @@ export function ConsultationModal({ isOpen, onClose }: ConsultationModalProps) {
         setInput("");
         sendMessage({
             role: "user",
-            parts: [{ type: "text", text }]
+            parts: [{ type: 'text', text }]
         });
     };
 
@@ -153,10 +145,35 @@ export function ConsultationModal({ isOpen, onClose }: ConsultationModalProps) {
                                             }`}
                                     >
                                         <div className="prose prose-invert prose-sm">
-                                            {m.parts
-                                                ? m.parts.filter(p => p.type === 'text').map((p, i) => (p as any).text).join('')
-                                                : (m as any).content
-                                            }
+                                            {m.parts ? (
+                                                m.parts.map((part, i) => {
+                                                    if (part.type === 'text') {
+                                                        return <span key={i}>{part.text}</span>;
+                                                    }
+                                                    if (part.type === 'tool-invocation') {
+                                                        const toolInvocation = (part as any).toolInvocation;
+                                                        const toolName = toolInvocation.toolName;
+                                                        const toolState = toolInvocation.state; // 'call' | 'result'
+
+                                                        // Render a nice UI for the tool
+                                                        return (
+                                                            <div key={i} className="my-2 p-3 bg-slate-900/50 rounded-lg border border-indigo-500/20 text-xs font-mono text-slate-400 flex items-center gap-2">
+                                                                {toolState === 'result' ? (
+                                                                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                                                                ) : (
+                                                                    <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" />
+                                                                )}
+                                                                <span>
+                                                                    {toolName === 'saveLead' ? 'Spracovávam údaje...' : `Running ${toolName}...`}
+                                                                </span>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    return null;
+                                                })
+                                            ) : (
+                                                (m as any).content
+                                            )}
                                         </div>
                                     </div>
                                     {m.role === "user" && (

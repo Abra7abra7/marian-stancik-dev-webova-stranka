@@ -1,23 +1,30 @@
 import { google } from '@ai-sdk/google';
 import { streamText, tool, convertToModelMessages } from 'ai';
 import { z } from 'zod';
-import { Resend } from 'resend';
+import { crmService } from '@/services/crm-service';
+import { getSystemPrompt } from '@/services/ai-service';
+import { chatService } from '@/services/chat-service';
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
     try {
-        const { messages: rawMessages } = await req.json();
+        const body = await req.json();
+        const { messages: rawMessages, id: sessionId } = body;
 
-        // Use helper to convert UI messages to ModelMessages (CoreMessages in newer v6 builds)
+        console.log("Chat API Request Body:", JSON.stringify(body, null, 2));
+
+        if (!rawMessages || !Array.isArray(rawMessages)) {
+            console.error("Invalid messages format received:", rawMessages);
+            return new Response(JSON.stringify({ error: "Invalid messages format" }), { status: 400 });
+        }
+
+        // Convert UI messages to ModelMessages
         const messages = await convertToModelMessages(rawMessages);
-
-        console.log("Normalized Messages:", JSON.stringify(messages, null, 2));
 
         console.log("Chat API processing messages count:", messages.length);
 
         const modelName = process.env.NEXT_PUBLIC_AI_MODEL || 'gemini-2.5-flash';
-        console.log("Using model:", modelName);
 
         const saveLeadParameters = z.object({
             name: z.string().optional().describe('Name of the lead'),
@@ -27,73 +34,69 @@ export async function POST(req: Request) {
             interest: z.string().optional().describe('What are they interested in? (Audit, PoC, etc.)'),
         });
 
+        // Use provided sessionId or generate a temporary one
+        const activeSessionId = sessionId || `session_${Date.now()}`;
+
         const result = streamText({
             model: google(modelName),
             messages,
-            system: `You are Michael, a Senior AI Business Development Manager for Marian Stancik.
-    
-    YOUR GOAL:
-    Qualify the lead and book a 15-min call.
-    
-    RULES:
-    - **concise**: Responses must be SHORT (max 3 sentences).
-    - **direct**: No "fluff" or generic greetings.
-    - **format**: Use bullet points for readability.
-    - **action**: Every response must end with a question or call to action.
-    
-    STRATEGY:
-    1. Ask: "What is your biggest operational bottleneck right now?"
-    2. Value: "We automated that for a client -> saved 20k/year."
-    3. Close: "Let's discuss details. What is your email?"
-    
-    TOOLS:
-    - Call \`saveLead\` IMMEDIATELY when you get contact info.
-    - Confirm with: "Thanks, Marian will contact you shortly."
-    
-    TONE: Professional, Brief, Results-Oriented.`,
+            system: getSystemPrompt(),
             tools: {
                 saveLead: tool({
                     description: 'Save a lead\'s contact information and interest. Call this ONLY when you have a valid email address.',
                     parameters: saveLeadParameters,
                     execute: async (args: any) => {
-                        console.log("Raw Tool Args:", JSON.stringify(args, null, 2));
-                        const { name, email, phone, company, interest } = args;
+                        console.log("Executing saveLead tool:", args);
 
-                        if (!email) {
-                            return { success: false, message: "Email is missing. Please ask the user for their email address again." };
+                        // Validate email presence again just in case
+                        if (!args.email) {
+                            return { success: false, message: "Email is missing." };
                         }
 
-                        console.log("Saving lead:", { email, interest });
-                        try {
-                            await new Resend(process.env.RESEND_API_KEY).emails.send({
-                                from: "AI Agent <onboarding@resend.dev>",
-                                to: "marian@stancik.ai",
-                                subject: `🎯 Nový Lead z AI Chatu: ${email}`,
-                                html: `
-                                    <h1>Nový Lead</h1>
-                                    <p><strong>Email:</strong> ${email}</p>
-                                    <p><strong>Meno:</strong> ${name || 'Nezadané'}</p>
-                                    <p><strong>Telefón:</strong> ${phone || 'Nezadané'}</p>
-                                    <p><strong>Firma:</strong> ${company || 'Nezadané'}</p>
-                                    <p><strong>Záujem:</strong> ${interest || 'Nezadané'}</p>
-                                `
-                            });
-                            return { success: true, message: "Lead saved successfully. Marian has been notified." };
-                        } catch (e) {
-                            console.error("Failed to email lead:", e);
-                            return { success: false, message: "Failed to save lead internally, but captured in chat logs." };
-                        }
+                        // Delegate to Service Layer
+                        const response = await crmService.saveLead(args);
+                        return response;
                     },
                 } as any),
             },
             maxSteps: 5,
-            onFinish: (event: any) => {
+            onFinish: async (event: any) => {
                 console.log("Stream finished. Usage:", event.usage);
+
+                try {
+                    // 1. Save the new Assistant Response
+                    await chatService.saveMessage({
+                        session_id: activeSessionId,
+                        role: 'assistant',
+                        content: event.text,
+                        tokens: event.usage.outputTokens
+                    });
+
+                    // 2. Save the User query that triggered this (it's the last message in `messages` which is ModelMessage)
+                    const lastUserMessage = messages[messages.length - 1];
+                    if (lastUserMessage && lastUserMessage.role === 'user') {
+                        let contentStr = "";
+                        if (typeof lastUserMessage.content === 'string') {
+                            contentStr = lastUserMessage.content;
+                        } else if (Array.isArray(lastUserMessage.content)) {
+                            // @ts-ignore
+                            contentStr = lastUserMessage.content.map(c => c.type === 'text' ? c.text : '').join(' ');
+                        }
+
+                        await chatService.saveMessage({
+                            session_id: activeSessionId,
+                            role: 'user',
+                            content: contentStr,
+                            tokens: event.usage.inputTokens
+                        });
+                    }
+
+                } catch (e) {
+                    console.error("Failed to save chat history:", e);
+                }
             },
         } as any);
 
-        console.log("StreamText Result Keys:", Object.keys(result));
-        // Use toUIMessageStreamResponse as confirmed by prototype inspection
         return (result as any).toUIMessageStreamResponse();
     } catch (error) {
         console.error("Chat API Error:", error);
