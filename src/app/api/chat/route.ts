@@ -53,10 +53,16 @@ export async function POST(req: Request) {
     TONE: Professional, Brief, Results-Oriented.`,
             tools: {
                 saveLead: tool({
-                    description: 'Save a lead\'s contact information and interest.',
+                    description: 'Save a lead\'s contact information and interest. Call this ONLY when you have a valid email address.',
                     parameters: saveLeadParameters,
                     execute: async (args: any) => {
+                        console.log("Raw Tool Args:", JSON.stringify(args, null, 2));
                         const { name, email, phone, company, interest } = args;
+
+                        if (!email) {
+                            return { success: false, message: "Email is missing. Please ask the user for their email address again." };
+                        }
+
                         console.log("Saving lead:", { email, interest });
                         try {
                             await new Resend(process.env.RESEND_API_KEY).emails.send({
@@ -80,10 +86,11 @@ export async function POST(req: Request) {
                     },
                 } as any),
             },
-            onFinish: (event) => {
+            maxSteps: 5,
+            onFinish: (event: any) => {
                 console.log("Stream finished. Usage:", event.usage);
             },
-        });
+        } as any);
 
         console.log("StreamText Result Keys:", Object.keys(result));
         // Use toUIMessageStreamResponse as confirmed by prototype inspection
