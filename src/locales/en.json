@@ -175,5 +175,11 @@
                 "desc": "Encrypted DB"
             }
         }
+    },
+    "voiceWizard": {
+        "whatToMention": "What to mention:",
+        "point1": "Your business type & goal",
+        "point2": "Current challenges (time/money)",
+        "point3": "Social media usage"
     }
 }

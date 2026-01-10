@@ -1,87 +1,111 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { X, Send, Bot, User, Sparkles, Loader2, CheckCircle2 } from "lucide-react";
+import { X, Bot, Loader2, CheckCircle2, Mic, Square, ArrowRight, Mail, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/lib/i18n/context";
+import { useAudioRecorder } from "@/hooks/use-audio-recorder";
 
 interface ConsultationModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
+type WizardStep = "record" | "email" | "analysis" | "success";
+
 export function ConsultationModal({ isOpen, onClose }: ConsultationModalProps) {
-    const { t } = useLanguage();
-    const [input, setInput] = useState("");
+    const { t, language } = useLanguage();
+    const [step, setStep] = useState<WizardStep>("record");
+    const [email, setEmail] = useState("");
+    const [transcribedText, setTranscribedText] = useState("");
+    const [isTranscribing, setIsTranscribing] = useState(false);
 
-    const { messages, sendMessage, status, stop } = useChat({
-        // @ts-ignore
-        initialMessages: [
-            {
-                id: "welcome",
-                role: "assistant",
-                content: t.consultation.initialMessage
-            }
-        ],
-    });
+    // AI Chat Hook
+    const { messages, sendMessage, status } = useChat();
 
-    // Derive loading state
-    const isLoading = status === "streaming" || status === "submitted";
-
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
-
+    // Reset state when opened
     useEffect(() => {
-        if (isOpen && inputRef.current) {
-            setTimeout(() => {
-                inputRef.current?.focus();
-            }, 100);
+        if (isOpen) {
+            setStep("record");
+            setEmail("");
+            setTranscribedText("");
         }
     }, [isOpen]);
 
-    useEffect(() => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-    }, [messages]);
-
-    const handleSend = async () => {
-        if (!input.trim()) return;
-        const currentInput = input;
-        setInput(""); // Optimistic clear
+    const handleRecordingComplete = async (blob: Blob) => {
+        setIsTranscribing(true);
         try {
-            await sendMessage({
-                role: "user",
-                parts: [{ type: 'text', text: currentInput }]
+            const formData = new FormData();
+            formData.append('file', blob, 'recording.webm');
+
+            const response = await fetch('/api/transcribe', {
+                method: 'POST',
+                body: formData,
             });
+
+            if (!response.ok) throw new Error('Transcription failed');
+
+            const data = await response.json();
+            if (data.text) {
+                setTranscribedText(data.text);
+                setStep("email");
+            }
         } catch (error) {
-            console.error("Failed to send message:", error);
-            setInput(currentInput); // Restore on error
+            console.error('Error handling recording:', error);
+        } finally {
+            setIsTranscribing(false);
         }
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            handleSend();
-        }
+    const {
+        isRecording,
+        startRecording,
+        stopRecording,
+        duration,
+        hasPermission
+    } = useAudioRecorder({
+        onRecordingComplete: handleRecordingComplete,
+        maxDuration: 30 // Business analysis shouldn't need >30s intro
+    });
+
+    const formatDuration = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const handleSuggestionClick = (text: string) => {
-        setInput("");
-        sendMessage({
+    const handleAnalyze = async () => {
+        if (!email || !transcribedText) return;
+        // setStep("analysis"); // We will jump to success on completion
+        // But for UI feedback, maybe show loading state.
+        setStep("success"); // Optimistic update, or show loading then success
+
+        // Construct a compound prompt
+        const prompt = `
+        User Email: ${email}
+        User Language: ${language.toUpperCase()}
+        User Situation/Problem: ${transcribedText}
+        
+        INSTRUCTIONS:
+        1. YOU MUST Call the "saveLead" tool.
+        2. You MUST pass the following EXACT arguments to the tool:
+           { 
+             "email": "${email}", 
+             "interest": "Voice Inquiry: ${transcribedText}" 
+           }
+        3. After calling the tool, just reply with "Done". Do not provide analysis.
+        `;
+
+        await sendMessage({
             role: "user",
-            parts: [{ type: 'text', text }]
+            parts: [{ type: 'text', text: prompt }]
         });
     };
 
-    const suggestedPrompts = [
-        t.consultation.suggested.booking,
-        t.consultation.suggested.services,
-        t.consultation.suggested.pricing,
-        t.consultation.suggested.crm
-    ];
+    // Find the latest assistant message to show as result
+    const lastAssistantMessage = messages.slice().reverse().find(m => m.role === 'assistant');
+    const isAnalyzing = status === 'streaming' || status === 'submitted';
 
     return (
         <AnimatePresence>
@@ -101,137 +125,168 @@ export function ConsultationModal({ isOpen, onClose }: ConsultationModalProps) {
                         className="fixed left-4 right-4 top-[10%] bottom-[10%] md:left-1/2 md:ml-[-300px] md:w-[600px] md:h-[600px] bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur-xl">
+                        <div className="flex items-center justify-between p-6 border-b border-slate-800">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
                                     <Bot className="w-5 h-5 text-indigo-400" />
                                 </div>
                                 <div>
-                                    <h3 className="font-display font-bold text-white">{t.consultation.title}</h3>
-                                    <div className="flex items-center gap-1.5">
-                                        <span className="relative flex h-2 w-2">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                        </span>
-                                        <span className="text-xs text-slate-400 font-medium">{t.consultation.online}</span>
-                                    </div>
+                                    <h3 className="font-display font-bold text-white text-lg">
+                                        Voice Consultation
+                                    </h3>
+                                    <p className="text-xs text-slate-400">Powered by Marian Stancik AI</p>
                                 </div>
                             </div>
-                            <button
-                                onClick={onClose}
-                                className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-                            >
+                            <button onClick={onClose} className="p-2 text-slate-400 hover:text-white rounded-lg transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
 
-                        {/* Messages */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-6">
-                            {messages.map((m) => (
-                                <div
-                                    key={m.id}
-                                    className={`flex gap-3 ${m.role === "user" ? "justify-end" : "justify-start"
-                                        }`}
+                        {/* Content Area */}
+                        <div className="flex-1 p-8 flex flex-col items-center justify-center relative overflow-hidden">
+
+                            {/* STEP 1: RECORD */}
+                            {step === "record" && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="w-full max-w-sm flex flex-col items-center gap-8 text-center"
                                 >
-                                    {m.role !== "user" && (
-                                        <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 shrink-0 mt-1">
-                                            <Sparkles className="w-4 h-4 text-indigo-400" />
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <h2 className="text-2xl font-bold text-white">Describe your challenge</h2>
+                                            <p className="text-slate-400">Tell me about your business processes effectively in under 30 seconds.</p>
                                         </div>
-                                    )}
-                                    <div
-                                        className={`max-w-[80%] rounded-2xl p-4 ${m.role === "user"
-                                            ? "bg-indigo-600 text-white rounded-br-none"
-                                            : "bg-slate-800 text-slate-200 rounded-bl-none border border-slate-700/50"
-                                            }`}
-                                    >
-                                        <div className="prose prose-invert prose-sm">
-                                            {m.parts ? (
-                                                m.parts.map((part, i) => {
-                                                    if (part.type === 'text') {
-                                                        return <span key={i}>{part.text}</span>;
-                                                    }
-                                                    if (part.type === 'tool-invocation') {
-                                                        const toolInvocation = (part as any).toolInvocation;
-                                                        const toolName = toolInvocation.toolName;
-                                                        const toolState = toolInvocation.state; // 'call' | 'result'
 
-                                                        // Render a nice UI for the tool
-                                                        return (
-                                                            <div key={i} className="my-2 p-3 bg-slate-900/50 rounded-lg border border-indigo-500/20 text-xs font-mono text-slate-400 flex items-center gap-2">
-                                                                {toolState === 'result' ? (
-                                                                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                                                                ) : (
-                                                                    <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" />
-                                                                )}
-                                                                <span>
-                                                                    {toolName === 'saveLead' ? 'Spracovávam údaje...' : `Running ${toolName}...`}
-                                                                </span>
-                                                            </div>
-                                                        );
-                                                    }
-                                                    return null;
-                                                })
-                                            ) : (
-                                                (m as any).content
-                                            )}
+                                        <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 text-left text-sm text-slate-300">
+                                            <p className="font-medium text-indigo-400 mb-2">{t.voiceWizard.whatToMention}</p>
+                                            <ul className="space-y-1 list-disc list-inside">
+                                                <li>{t.voiceWizard.point1}</li>
+                                                <li>{t.voiceWizard.point2}</li>
+                                                <li>{t.voiceWizard.point3}</li>
+                                            </ul>
                                         </div>
                                     </div>
-                                    {m.role === "user" && (
-                                        <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600 shrink-0 mt-1">
-                                            <User className="w-4 h-4 text-slate-300" />
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                            {isLoading && (
-                                <div className="flex gap-3 justify-start">
-                                    <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 shrink-0 mt-1">
-                                        <Bot className="w-4 h-4 text-indigo-400" />
-                                    </div>
-                                    <div className="bg-slate-800 rounded-2xl rounded-bl-none p-4 border border-slate-700/50 flex items-center gap-1.5">
-                                        <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                                        <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                                        <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
-                                    </div>
-                                </div>
-                            )}
-                            <div ref={messagesEndRef} />
-                        </div>
 
-                        {/* Input Area */}
-                        <div className="p-4 bg-slate-900 border-t border-slate-800 space-y-4">
-                            {messages.length <= 1 && (
-                                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mask-fade-right">
-                                    {suggestedPrompts.map((prompt, i) => (
+                                    <div className="relative group">
+                                        {/* Outer Ring Animation during recording */}
+                                        {isRecording && (
+                                            <div className="absolute inset-0 rounded-full bg-red-500/20 animate-ping" />
+                                        )}
+
                                         <button
-                                            key={i}
-                                            onClick={() => handleSuggestionClick(prompt)}
-                                            className="whitespace-nowrap px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-sm rounded-full transition-colors"
+                                            onClick={isRecording ? stopRecording : startRecording}
+                                            disabled={isTranscribing}
+                                            className={`relative z-10 w-24 h-24 rounded-full flex items-center justify-center transition-all duration-300 ${isRecording
+                                                ? 'bg-red-500 hover:bg-red-600 shadow-[0_0_40px_-10px_rgba(239,68,68,0.5)]'
+                                                : 'bg-indigo-600 hover:bg-indigo-500 shadow-[0_0_40px_-10px_rgba(79,70,229,0.5)]'
+                                                } ${isTranscribing ? 'opacity-50 cursor-wait' : ''}`}
                                         >
-                                            {prompt}
+                                            {isTranscribing ? (
+                                                <Loader2 className="w-8 h-8 text-white animate-spin" />
+                                            ) : isRecording ? (
+                                                <Square className="w-8 h-8 text-white fill-current" />
+                                            ) : (
+                                                <Mic className="w-10 h-10 text-white" />
+                                            )}
                                         </button>
-                                    ))}
-                                </div>
+                                    </div>
+
+                                    {isRecording ? (
+                                        <div className="space-y-1">
+                                            <div className="text-2xl font-mono text-white font-medium">
+                                                {formatDuration(duration)} <span className="text-slate-500 text-lg">/ 0:30</span>
+                                            </div>
+                                            <p className="text-sm text-red-400 animate-pulse">Recording...</p>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-slate-500">Click to start recording</p>
+                                    )}
+
+                                    {isTranscribing && (
+                                        <div className="flex items-center gap-2 text-indigo-400">
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            <span>Processing audio...</span>
+                                        </div>
+                                    )}
+                                </motion.div>
                             )}
 
-                            <div className="flex gap-2 relative">
-                                <input
-                                    ref={inputRef}
-                                    value={input}
-                                    onChange={(e) => setInput(e.target.value)}
-                                    onKeyDown={handleKeyDown}
-                                    placeholder={t.consultation.inputPlaceholder}
-                                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-light"
-                                    disabled={isLoading}
-                                />
-                                <button
-                                    onClick={handleSend}
-                                    disabled={isLoading || !input.trim()}
-                                    className="px-4 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl transition-all flex items-center justify-center min-w-[3rem]"
+                            {/* STEP 2: EMAIL GATE */}
+                            {step === "email" && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="w-full max-w-sm flex flex-col gap-6"
                                 >
-                                    <Send className="w-5 h-5" />
-                                </button>
-                            </div>
+                                    <div className="text-center space-y-2">
+                                        <h2 className="text-xl font-bold text-white">One last thing</h2>
+                                        <p className="text-slate-400">Where should we send the detailed report?</p>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Your Message</label>
+                                            <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-800 text-slate-300 text-sm italic min-h-[80px]">
+                                                "{transcribedText}"
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Your Email</label>
+                                            <div className="relative">
+                                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                                                <input
+                                                    type="email"
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                    placeholder="name@company.com"
+                                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            onClick={handleAnalyze}
+                                            disabled={!email || !email.includes('@')}
+                                            className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-all flex items-center justify-center gap-2 group"
+                                        >
+                                            <span>Submit Inquiry</span>
+                                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                        </button>
+
+                                        <button
+                                            onClick={() => setStep('record')}
+                                            className="w-full py-2 text-slate-500 hover:text-slate-300 text-sm transition-colors"
+                                        >
+                                            Back to recording
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* STEP 3: SUCCESS */}
+                            {step === "success" && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="w-full h-full flex flex-col items-center justify-center text-center p-6"
+                                >
+                                    <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
+                                        <CheckCircle2 className="w-10 h-10 text-green-500" />
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-white mb-2">Thank you!</h2>
+                                    <p className="text-slate-400 mb-8 max-w-sm">
+                                        We have received your detailed inquiry. Our AI Agent is analyzing it right now and you will receive a report at <span className="text-white font-medium">{email}</span> shortly.
+                                    </p>
+                                    <button
+                                        onClick={onClose}
+                                        className="px-8 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-medium transition-colors"
+                                    >
+                                        Close
+                                    </button>
+                                </motion.div>
+                            )}
                         </div>
                     </motion.div>
                 </>

@@ -6,7 +6,11 @@ export interface Lead {
     phone?: string;
     company?: string;
     interest?: string;
-    status?: 'new' | 'contacted' | 'qualified' | 'lost';
+    status?: 'new' | 'contacted' | 'qualified' | 'lost' | 'disqualified';
+    ai_analysis?: {
+        status: 'qualified' | 'disqualified';
+        reason: string;
+    };
 }
 
 export interface ChatSession {

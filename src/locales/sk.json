@@ -175,5 +175,11 @@
                 "desc": "Encrypted DB"
             }
         }
+    },
+    "voiceWizard": {
+        "whatToMention": "Čo spomenúť:",
+        "point1": "Typ vášho podnikania a cieľ",
+        "point2": "Aktuálne výzvy (čas/peniaze)",
+        "point3": "Používanie sociálnych sietí"
     }
 }

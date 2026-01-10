@@ -175,5 +175,11 @@
                 "desc": "Szyfrowana Baza Danych"
             }
         }
+    },
+    "voiceWizard": {
+        "whatToMention": "O czym wspomnieć:",
+        "point1": "Rodzaj działalności i cel",
+        "point2": "Obecne wyzwania (czas/pieniądze)",
+        "point3": "Wykorzystanie mediów społecznościowych"
     }
 }
