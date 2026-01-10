@@ -8,7 +8,10 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const key = searchParams.get('key');
 
-    if (!key || key.trim() !== ADMIN_SECRET.trim()) {
+    // Normalize: Remove all spaces to be lenient
+    const normalize = (s: string) => s.replace(/\s+/g, '');
+
+    if (!key || normalize(key) !== normalize(ADMIN_SECRET)) {
         console.warn(`Admin Auth Failed. Expected length: ${ADMIN_SECRET.length}, Received length: ${key?.length}`);
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

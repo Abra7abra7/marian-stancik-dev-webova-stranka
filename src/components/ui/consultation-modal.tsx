@@ -1,6 +1,5 @@
 "use client";
 
-import { useChat } from "@ai-sdk/react";
 import { X, Bot, Loader2, CheckCircle2, Mic, Square, ArrowRight, Mail, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -21,8 +20,7 @@ export function ConsultationModal({ isOpen, onClose }: ConsultationModalProps) {
     const [transcribedText, setTranscribedText] = useState("");
     const [isTranscribing, setIsTranscribing] = useState(false);
 
-    // AI Chat Hook
-    const { messages, sendMessage, status } = useChat();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Reset state when opened
     useEffect(() => {
@@ -30,6 +28,7 @@ export function ConsultationModal({ isOpen, onClose }: ConsultationModalProps) {
             setStep("record");
             setEmail("");
             setTranscribedText("");
+            setIsSubmitting(false);
         }
     }, [isOpen]);
 
@@ -77,35 +76,33 @@ export function ConsultationModal({ isOpen, onClose }: ConsultationModalProps) {
 
     const handleAnalyze = async () => {
         if (!email || !transcribedText) return;
-        // setStep("analysis"); // We will jump to success on completion
-        // But for UI feedback, maybe show loading state.
-        setStep("success"); // Optimistic update, or show loading then success
+        setIsSubmitting(true);
 
-        // Construct a compound prompt
-        const prompt = `
-        User Email: ${email}
-        User Language: ${language.toUpperCase()}
-        User Situation/Problem: ${transcribedText}
-        
-        INSTRUCTIONS:
-        1. YOU MUST Call the "saveLead" tool.
-        2. You MUST pass the following EXACT arguments to the tool:
-           { 
-             "email": "${email}", 
-             "interest": "Voice Inquiry: ${transcribedText}" 
-           }
-        3. After calling the tool, just reply with "Done". Do not provide analysis.
-        `;
+        try {
+            const res = await fetch('/api/contact/voice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email,
+                    message: transcribedText
+                })
+            });
 
-        await sendMessage({
-            role: "user",
-            parts: [{ type: 'text', text: prompt }]
-        });
+            if (res.ok) {
+                setStep("success");
+            } else {
+                console.error("Submission failed");
+                alert("Something went wrong. Please try again.");
+            }
+        } catch (error) {
+            console.error("Submission error", error);
+            alert("Connection failed.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    // Find the latest assistant message to show as result
-    const lastAssistantMessage = messages.slice().reverse().find(m => m.role === 'assistant');
-    const isAnalyzing = status === 'streaming' || status === 'submitted';
+
 
     return (
         <AnimatePresence>
@@ -248,11 +245,20 @@ export function ConsultationModal({ isOpen, onClose }: ConsultationModalProps) {
 
                                         <button
                                             onClick={handleAnalyze}
-                                            disabled={!email || !email.includes('@')}
+                                            disabled={!email || !email.includes('@') || isSubmitting}
                                             className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-all flex items-center justify-center gap-2 group"
                                         >
-                                            <span>Submit Inquiry</span>
-                                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                            {isSubmitting ? (
+                                                <>
+                                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                                    <span>Sending...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span>Submit Inquiry</span>
+                                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                                </>
+                                            )}
                                         </button>
 
                                         <button
