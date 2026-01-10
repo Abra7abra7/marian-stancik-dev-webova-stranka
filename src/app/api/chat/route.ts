@@ -25,6 +25,12 @@ export async function POST(req: Request) {
         console.log("Chat API processing messages count:", messages.length);
 
         const modelName = process.env.NEXT_PUBLIC_AI_MODEL || 'gemini-2.5-flash';
+        console.log("AI Configuration:", {
+            model: modelName,
+            hasGoogleKey: !!process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+            hasResendKey: !!process.env.RESEND_API_KEY,
+            hasSupabaseKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY
+        });
 
         const saveLeadParameters = z.object({
             name: z.string().optional().describe('Name of the lead'),
