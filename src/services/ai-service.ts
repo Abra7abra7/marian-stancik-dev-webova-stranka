@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 export async function qualifyLead(text: string): Promise<{ status: 'qualified' | 'disqualified', reason: string }> {
     const { object } = await generateObject({
-        model: google('gemini-1.5-flash'),
+        model: google('gemini-1.5-flash-001'),
         schema: z.object({
             status: z.enum(['qualified', 'disqualified']),
             reason: z.string().describe('Short explanation (max 1 sentence) why this determination was made.'),
