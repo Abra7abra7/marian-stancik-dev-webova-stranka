@@ -41,6 +41,9 @@ export async function POST(req: Request) {
             model: google(modelName),
             messages,
             system: getSystemPrompt(),
+            onStepFinish: async (event: any) => {
+                console.log("Step finished. Tool Calls:", JSON.stringify(event.toolCalls));
+            },
             tools: {
                 saveLead: tool({
                     description: 'Save a lead\'s contact information and interest. Call this ONLY when you have a valid email address.',
