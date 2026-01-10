@@ -3,18 +3,28 @@ import { Lead, SaveLeadResponse } from '@/lib/types';
 import { Resend } from 'resend';
 
 export class CrmService {
-    private resend: Resend;
-    private supabaseAdmin;
+    private resend?: Resend;
+    private supabaseAdmin?: any;
 
     constructor() {
-        const apiKey = process.env.RESEND_API_KEY;
-        console.log("Initializing CrmService. Resend Key Available?", !!apiKey, apiKey ? `(Ends with ...${apiKey.slice(-5)})` : "");
-        this.resend = new Resend(apiKey);
+        // We do NOT initialize clients here to prevent build-time errors if envs are missing.
+        // Clients are initialized lazily in getResend() and getSupabase().
+    }
 
-        // Initialize Admin Client for reliable writes
+    private getResend() {
+        if (this.resend) return this.resend;
+        const apiKey = process.env.RESEND_API_KEY;
+        console.log("Initializing Resend. Key Available?", !!apiKey);
+        this.resend = new Resend(apiKey);
+        return this.resend;
+    }
+
+    private getSupabase() {
+        if (this.supabaseAdmin) return this.supabaseAdmin;
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
         const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
         this.supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+        return this.supabaseAdmin;
     }
 
     async saveLead(lead: Lead): Promise<SaveLeadResponse> {
@@ -44,11 +54,12 @@ export class CrmService {
         let emailSuccess = false;
 
         // 1. Save to Supabase (Success guaranteed by Admin Client)
-        if (this.supabaseAdmin) {
+        const supabase = this.getSupabase();
+        if (supabase) {
             // Note: We avoid saving 'ai_analysis' directly to a column if it doesn't exist to prevent errors.
             // We append the reasoning to the interest or assume specific schema presence.
             // For stability, we will just save the status and core fields.
-            const { error, data } = await this.supabaseAdmin.from('leads').insert([
+            const { error, data } = await supabase.from('leads').insert([
                 {
                     email,
                     name,
@@ -70,7 +81,7 @@ export class CrmService {
 
         // 2. Alert Admin (Marian)
         try {
-            await this.resend.emails.send({
+            await this.getResend().emails.send({
                 from: "Marian AI Agent <ai@marianstancik.dev>",
                 to: "stancikmarian8@gmail.com",
                 subject: `🎯 Nový Lead (${finalStatus.toUpperCase()}): ${email}`,
@@ -96,7 +107,7 @@ export class CrmService {
             try {
                 if (finalStatus === 'qualified') {
                     // Send Booking Link
-                    const { data, error } = await this.resend.emails.send({
+                    const { data, error } = await this.getResend().emails.send({
                         from: "Marian AI Agent <ai@marianstancik.dev>",
                         to: email,
                         subject: `Výsledok analýzy: Kvalifikovaný pre spoluprácu`,
@@ -113,7 +124,7 @@ export class CrmService {
                     else console.log("Resend Success (Qualified):", data);
                 } else {
                     // Send Educational Resources
-                    const { data, error } = await this.resend.emails.send({
+                    const { data, error } = await this.getResend().emails.send({
                         from: "Marian AI Agent <ai@marianstancik.dev>",
                         to: email,
                         subject: `Potvrdenie prijatia správy`,
