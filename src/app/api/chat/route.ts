@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
         console.log("Chat API processing messages count:", messages.length);
 
-        const modelName = process.env.NEXT_PUBLIC_AI_MODEL || 'gemini-1.5-flash-001';
+        const modelName = process.env.NEXT_PUBLIC_AI_MODEL || 'gemini-2.5-flash';
         console.log("AI Configuration:", {
             model: modelName,
             hasGoogleKey: !!process.env.GOOGLE_GENERATIVE_AI_API_KEY,
