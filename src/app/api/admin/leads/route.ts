@@ -8,7 +8,8 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const key = searchParams.get('key');
 
-    if (key !== ADMIN_SECRET) {
+    if (!key || key.trim() !== ADMIN_SECRET.trim()) {
+        console.warn(`Admin Auth Failed. Expected length: ${ADMIN_SECRET.length}, Received length: ${key?.length}`);
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
